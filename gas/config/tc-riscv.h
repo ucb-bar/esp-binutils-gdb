@@ -77,6 +77,10 @@ extern int riscv_parse_long_option (const char *);
 #define md_pre_output_hook riscv_pre_output_hook()
 extern void riscv_pre_output_hook (void);
 
+/*Handle unrecognized lines to look for predicates*/
+#define tc_unrecognized_line(c) riscv_unrecognized_line(c)
+extern int riscv_unrecognized_line (int c);
+
 /* Let the linker resolve all the relocs due to relaxation.  */
 #define tc_fix_adjustable(fixp) 0
 #define md_allow_local_subtract(l,r,s) 0

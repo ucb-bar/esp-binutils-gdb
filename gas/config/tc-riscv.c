@@ -794,6 +794,10 @@ enum reg_class
   RCLASS_FPR,
   RCLASS_VECR,
   RCLASS_VECM,
+  RCLASS_HWACHA_GPR,
+  RCLASS_HWACHA_SPR,
+  RCLASS_HWACHA_APR,
+  RCLASS_HWACHA_PPR,
   RCLASS_MAX,
 
   RCLASS_CSR
@@ -1005,9 +1009,9 @@ reg_lookup (char **s, enum reg_class class, unsigned int *regnop)
 }
 
 static bool
-arg_lookup (char **s, const char *const *array, size_t size, unsigned *regnop)
+arg_lookup (char **s, const char sep, const char *const *array, size_t size, unsigned *regnop)
 {
-  const char *p = strchr (*s, ',');
+  const char *p = strchr (*s, sep);
   size_t i, len = p ? (size_t)(p - *s) : strlen (*s);
 
   if (len == 0)
@@ -1185,6 +1189,60 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 		goto unknown_validate_operand;
 	    }
 	  break;
+	case '^': /* Xcustom */
+	  switch (*++oparg)
+	    {
+	    case 'd': USE_BITS (OP_MASK_RD, OP_SH_RD); break;
+	    case 's': USE_BITS (OP_MASK_RS1, OP_SH_RS1); break;
+	    case 't': USE_BITS (OP_MASK_RS2, OP_SH_RS2); break;
+	    case 'j': USE_BITS (OP_MASK_CUSTOM_IMM, OP_SH_CUSTOM_IMM); break;
+	    default:
+	      goto unknown_validate_operand;
+	    }
+	  break;  /* end Xcustom */
+	case '#': /* Xhwacha */
+	  switch (*++oparg)
+	    {
+	    case 'g': USE_BITS (OP_MASK_IMMNGPR, OP_SH_IMMNGPR); break;
+	    case 'f': USE_BITS (OP_MASK_IMMNPPR, OP_SH_IMMNPPR); break;
+	    case 'n': USE_BITS (OP_MASK_IMMSEGNELM, OP_SH_IMMSEGNELM); break;
+	    case 'j': USE_BITS (OP_MASK_VVIMM, OP_SH_VVIMM); break;
+	    case 'm': USE_BITS (OP_MASK_VRM, OP_SH_VRM); break;
+	    case '<': USE_BITS (OP_MASK_VSHAMTW,	OP_SH_VSHAMTW);	break;
+	    case '>':	USE_BITS (OP_MASK_VSHAMT,	OP_SH_VSHAMT);	break;
+	    case 'k': USE_BITS (OP_MASK_VCIMM, OP_SH_VCIMM); break;
+	    case 'p': USE_BITS (OP_MASK_VPRED, OP_SH_VPRED); break;
+	    case 'N': USE_BITS (OP_MASK_VN, OP_SH_VN); break;
+	    case 'c': USE_BITS (OP_MASK_VCOND, OP_SH_VCOND); break;
+	    case 'z': USE_BITS (OP_MASK_VPFUNC, OP_SH_VPFUNC); break;
+	    case 'G':	USE_BITS (OP_MASK_VPREV,		OP_SH_VPREV); break;
+	    case 'H':	USE_BITS (OP_MASK_VSUCC,		OP_SH_VSUCC); break;
+	    case 'v': USE_BITS (OP_MASK_VVD, OP_SH_VVD); break;
+	    case 'y': USE_BITS (OP_MASK_VVS3, OP_SH_VVS3); /*fallthrough*/
+	    case 'x': USE_BITS (OP_MASK_VVS2, OP_SH_VVS2); /*fallthrough*/
+	    case 'w': USE_BITS (OP_MASK_VVS1, OP_SH_VVS1); break;
+	    case 'd': USE_BITS (OP_MASK_VRD, OP_SH_VRD); break;
+	    case 's': USE_BITS (OP_MASK_VRS, OP_SH_VRS); break;
+	    case 'u': USE_BITS (OP_MASK_VRS, OP_SH_VRS); /*fallthrough*/
+	    case 't': USE_BITS (OP_MASK_VRT, OP_SH_VRT); break;
+	    case 'r': USE_BITS (OP_MASK_VRR, OP_SH_VRR); break;
+	    case 'D': USE_BITS (OP_MASK_VRD, OP_SH_VRD); break;
+	    case 'S': USE_BITS (OP_MASK_VRS, OP_SH_VRS); break;
+	    case 'T': USE_BITS (OP_MASK_VRT, OP_SH_VRT); break;
+	    case 'R': USE_BITS (OP_MASK_VRR, OP_SH_VRR); break;
+	    case 'A': USE_BITS (OP_MASK_VAS, OP_SH_VAS); break;
+	    case 'B': USE_BITS (OP_MASK_VAT, OP_SH_VAT); break;
+	    case 'F': USE_BITS (OP_MASK_VPD, OP_SH_VPD); break;
+	    case 'O': USE_BITS (OP_MASK_VPS, OP_SH_VPS); break;
+	    case 'P': USE_BITS (OP_MASK_VPT, OP_SH_VPT); break;
+	    case 'Q': USE_BITS (OP_MASK_VPR, OP_SH_VPR); break;
+	    case 'e': USE_BITS (OP_MASK_SVARD, OP_SH_SVARD); break;
+	    case 'E': USE_BITS (OP_MASK_SVSRDLO, OP_SH_SVSRDLO);
+	      USE_BITS (OP_MASK_SVSRDHI, OP_SH_SVSRDHI); break;
+	    default:
+	      goto unknown_validate_operand;
+	    }
+	  break;  /* end Xhwacha */
 	default:
 	unknown_validate_operand:
 	  as_bad (_("internal: bad RISC-V opcode "
@@ -1272,6 +1330,11 @@ md_begin (void)
   hash_reg_names (RCLASS_FPR, riscv_fpr_names_abi, NFPR);
   hash_reg_names (RCLASS_VECR, riscv_vecr_names_numeric, NVECR);
   hash_reg_names (RCLASS_VECM, riscv_vecm_names_numeric, NVECM);
+  hash_reg_names (RCLASS_HWACHA_GPR, riscv_hwacha_gpr_names, NVGPR);
+  hash_reg_names (RCLASS_HWACHA_SPR, riscv_hwacha_spr_names, NVSPR);
+  hash_reg_names (RCLASS_HWACHA_APR, riscv_hwacha_apr_names, NVAPR);
+  hash_reg_names (RCLASS_HWACHA_PPR, riscv_hwacha_ppr_names, NVPPR);
+
   /* Add "fp" as an alias for "s0".  */
   hash_reg_name (RCLASS_GPR, "fp", 8);
 
@@ -1311,6 +1374,44 @@ riscv_apply_const_reloc (bfd_reloc_code_real_type reloc_type, bfd_vma value)
     default:
       abort ();
     }
+}
+
+/* Whether the current line has a scalar prefix or not */
+static bool riscv_scalar = false;
+
+/* Whether we are auto-detecing the sv bits on the current line */
+static bool riscv_sv_auto = false;
+
+/* Whether or not the current line has a negated predicate or not */
+static bool riscv_predneg = false;
+
+/* The number of the current line's predicate reg */
+static unsigned int riscv_prednum = 0;
+
+int riscv_unrecognized_line (int c)
+{
+  bool ok = true;
+  switch (c)
+  {
+    case '@':
+      if (input_line_pointer[0] == 's')
+      {
+        riscv_scalar = true;
+        input_line_pointer++;
+        return 1;
+      }
+      if (input_line_pointer[0] == '!')
+      {
+        riscv_predneg = true;
+        input_line_pointer++;
+      }
+      ok = reg_lookup(&input_line_pointer, RCLASS_HWACHA_PPR, &riscv_prednum);
+      if ( !ok )
+        as_bad( _( "Invalid vector predicate register" ) );
+      return 1;
+    default:
+      return 0;
+  }
 }
 
 /* Output an instruction.  IP is the instruction information.
@@ -1862,6 +1963,11 @@ macro (struct riscv_cl_insn *ip, expressionS *imm_expr,
 		   BFD_RELOC_RISCV_PCREL_HI20, BFD_RELOC_RISCV_PCREL_LO12_S);
       break;
 
+    case M_VF:
+      pcrel_access (0, rs1, imm_expr, "vf", "s,s,q",
+        BFD_RELOC_RISCV_PCREL_HI20, BFD_RELOC_RISCV_PCREL_LO12_S);
+      break;
+
     case M_CALL:
       riscv_call (rd, rs1, imm_expr, *imm_reloc);
       break;
@@ -2069,7 +2175,7 @@ my_getVsetvliExpression (expressionS *ep, char *str)
   bfd_boolean vsew_found = FALSE, vlmul_found = FALSE;
   bfd_boolean vta_found = FALSE, vma_found = FALSE;
 
-  if (arg_lookup (&str, riscv_vsew, ARRAY_SIZE (riscv_vsew), &vsew_value))
+  if (arg_lookup (&str, ',', riscv_vsew, ARRAY_SIZE (riscv_vsew), &vsew_value))
     {
       if (*str == ',')
 	++str;
@@ -2077,7 +2183,7 @@ my_getVsetvliExpression (expressionS *ep, char *str)
 	as_bad (_("multiple vsew constants"));
       vsew_found = TRUE;
     }
-  if (arg_lookup (&str, riscv_vlmul, ARRAY_SIZE (riscv_vlmul), &vlmul_value))
+  if (arg_lookup (&str, ',', riscv_vlmul, ARRAY_SIZE (riscv_vlmul), &vlmul_value))
     {
       if (*str == ',')
 	++str;
@@ -2085,7 +2191,7 @@ my_getVsetvliExpression (expressionS *ep, char *str)
 	as_bad (_("multiple vlmul constants"));
       vlmul_found = TRUE;
     }
-  if (arg_lookup (&str, riscv_vta, ARRAY_SIZE (riscv_vta), &vta_value))
+  if (arg_lookup (&str, ',', riscv_vta, ARRAY_SIZE (riscv_vta), &vta_value))
     {
       if (*str == ',')
 	++str;
@@ -2093,7 +2199,7 @@ my_getVsetvliExpression (expressionS *ep, char *str)
 	as_bad (_("multiple vta constants"));
       vta_found = TRUE;
     }
-  if (arg_lookup (&str, riscv_vma, ARRAY_SIZE (riscv_vma), &vma_value))
+  if (arg_lookup (&str, ',', riscv_vma, ARRAY_SIZE (riscv_vma), &vma_value))
     {
       if (*str == ',')
 	++str;
@@ -2257,6 +2363,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
       /* Reset error message of the previous round.  */
       error = _("illegal operands");
       create_insn (ip, insn);
+      riscv_sv_auto = false;
       argnum = 1;
 
       imm_expr->X_op = O_absent;
@@ -2315,6 +2422,351 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      error = NULL;
 	      insn_with_csr = false;
 	      goto out;
+
+	    case '#': /* Xhwacha */
+	      switch (*++oparg)
+		{
+		case 'g':
+		  my_getExpression( imm_expr, asarg );
+		  /* check_absolute_expr( ip, imm_expr, false ); */
+		  if ((unsigned long) imm_expr->X_add_number > NVGPR ||
+		      ((unsigned long) imm_expr->X_add_number & ~OP_MASK_IMMNGPR))
+		    as_bad( _( "Improper ngpr amount (%lu)" ),
+		             (unsigned long) imm_expr->X_add_number );
+		  INSERT_OPERAND( IMMNGPR, *ip, imm_expr->X_add_number );
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case 'f':
+		  my_getExpression( imm_expr, asarg );
+		  /* check_absolute_expr( ip, imm_expr, false ); */
+		  if ((unsigned long) imm_expr->X_add_number > NVSPR ||
+		      ((unsigned long) imm_expr->X_add_number & ~OP_MASK_IMMNPPR))
+		    as_bad( _( "Improper nppr amount (%lu)" ),
+		             (unsigned long) imm_expr->X_add_number );
+		  INSERT_OPERAND( IMMNPPR, *ip, imm_expr->X_add_number );
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case 'n':
+		  my_getExpression( imm_expr, asarg );
+		  /* check_absolute_expr( ip, imm_expr, false ); */
+		  if ((unsigned long) imm_expr->X_add_number > 8 )
+		    as_warn( _( "Improper nelm amount (%lu)" ),
+		             (unsigned long) imm_expr->X_add_number );
+		  INSERT_OPERAND( IMMSEGNELM, *ip, imm_expr->X_add_number - 1 );
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case 'j': /* sign-extended immediate */
+		  my_getExpression( imm_expr, asarg );
+		  /* check_absolute_expr( ip, imm_expr, false ); */
+		  if ((unsigned long) imm_expr->X_add_number > ((unsigned long)(1 << 32) - 1) )
+		    as_warn( _( "Improper vimm amount (%lu)" ),
+		             (unsigned long) imm_expr->X_add_number );
+		  INSERT_OPERAND( VVIMM, *ip, imm_expr->X_add_number);
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case 'm':		/* rounding mode */
+		  if (arg_lookup (&asarg, ',', riscv_rm, ARRAY_SIZE(riscv_rm), &regno))
+		    {
+		      INSERT_OPERAND (VRM, *ip, regno);
+		      continue;
+		    }
+		  break;
+		case '<':		/* shift amount, 0 - 31 */
+		  my_getExpression (imm_expr, asarg);
+		  check_absolute_expr (ip, imm_expr, false);
+		  if ((unsigned long) imm_expr->X_add_number > 31)
+		    as_warn (_("Improper shift amount (%lu)"),
+		             (unsigned long) imm_expr->X_add_number);
+		  INSERT_OPERAND (VSHAMTW, *ip, imm_expr->X_add_number);
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case '>':		/* shift amount, 0 - (XLEN-1) */
+		  my_getExpression (imm_expr, asarg);
+		  check_absolute_expr (ip, imm_expr, false);
+		  if ((unsigned long) imm_expr->X_add_number >= xlen)
+		    as_warn (_("Improper shift amount (%lu)"),
+		             (unsigned long) imm_expr->X_add_number);
+		  INSERT_OPERAND (VSHAMT, *ip, imm_expr->X_add_number);
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case 'k':		/* 29 bit immediate shifted up to fill 32 bits */
+		  my_getExpression( imm_expr, asarg );
+		  /* check_absolute_expr( ip, imm_expr, false ); */
+		  if ((signed long) imm_expr->X_add_number > ((signed long)(1 << 29) - 1) ||
+		      (signed long) imm_expr->X_add_number < ((signed long)-1*(1 << 29)))
+		    as_warn( _( "Improper vcimm amount (%ld), must be between %lu and %ld" ),
+		             (signed long) imm_expr->X_add_number,
+		             ((unsigned long)(1 << 29) - 1),
+		             ((signed long)-1*(1 << 29)));
+		  INSERT_OPERAND( VCIMM, *ip, imm_expr->X_add_number);
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case 'd':
+		  if (riscv_sv_auto) {
+		    if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) ) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector register vd" ) );
+		      INSERT_OPERAND( VVD, *ip, 0);
+		    } else INSERT_OPERAND( VVD, *ip, 1);
+		  } else {
+		    if (EXTRACT_OPERAND( VVD, ip->insn_opcode)) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) )
+		        as_bad( _( "Invalid vector register vvd" ) );
+		    } else {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector shared vsd register" ) );
+		    }
+		  }
+		  INSERT_OPERAND( VRD, *ip, regno );
+		  continue;
+		case 's':
+		  if (riscv_sv_auto) {
+		    if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) ) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector register vs1" ) );
+		      INSERT_OPERAND( VVS1, *ip, 0);
+		    } else INSERT_OPERAND( VVS1, *ip, 1);
+		  } else {
+		    if (EXTRACT_OPERAND( VVS1, ip->insn_opcode)) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) )
+		        as_bad( _( "Invalid vector register vvr1" ) );
+		    } else {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector shared vsr1 register" ) );
+		    }
+		  }
+		  INSERT_OPERAND( VRS, *ip, regno );
+		  continue;
+		case 'u':
+		  if (riscv_sv_auto) {
+		    if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) ) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector register vs1" ) );
+		      INSERT_OPERAND( VVS1, *ip, 0);
+		      INSERT_OPERAND( VVS2, *ip, 0);
+		    } else {
+		      INSERT_OPERAND( VVS1, *ip, 1);
+		      INSERT_OPERAND( VVS2, *ip, 1);
+		    }
+		  } else {
+		    if (EXTRACT_OPERAND( VVS1, ip->insn_opcode)) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) )
+		        as_bad( _( "Invalid vector register" ) );
+		    } else {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector shared register" ) );
+		    }
+		  }
+		  INSERT_OPERAND( VRS, *ip, regno );
+		  INSERT_OPERAND( VRT, *ip, regno );
+		  continue;
+		case 't':
+		  if (riscv_sv_auto) {
+		    if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) ) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector register vs2" ) );
+		      INSERT_OPERAND( VVS2, *ip, 0);
+		    } else INSERT_OPERAND( VVS2, *ip, 1);
+		  } else {
+		    if (EXTRACT_OPERAND( VVS2, ip->insn_opcode)) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) )
+		        as_bad( _( "Invalid vector register vvr2" ) );
+		    } else {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector shared vsr2 register" ) );
+		    }
+		  }
+		  INSERT_OPERAND( VRT, *ip, regno );
+		  continue;
+		case 'r':
+		  if (riscv_sv_auto) {
+		    if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) ) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector register vs3" ) );
+		      INSERT_OPERAND( VVS3, *ip, 0);
+		    } else INSERT_OPERAND( VVS3, *ip, 1);
+		  } else {
+		    if (EXTRACT_OPERAND( VVS3, ip->insn_opcode)) {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_GPR, &regno ) )
+		        as_bad( _( "Invalid vector register vvr3" ) );
+		    } else {
+		      if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		        as_bad( _( "Invalid vector shared vsr3 register" ) );
+		    }
+		  }
+		  INSERT_OPERAND( VRR, *ip, regno );
+		  continue;
+		case 'D':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		    as_bad( _( "Invalid vector shared register" ) );
+		  INSERT_OPERAND( VRD, *ip, regno );
+		  continue;
+		case 'S':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		    as_bad( _( "Invalid vector shared register" ) );
+		  INSERT_OPERAND( VRS, *ip, regno );
+		  continue;
+		case 'T':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		    as_bad( _( "Invalid vector shared register" ) );
+		  INSERT_OPERAND( VRT, *ip, regno );
+		  continue;
+		case 'R':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		    as_bad( _( "Invalid vector shared register" ) );
+		  INSERT_OPERAND( VRR, *ip, regno );
+		  continue;
+		case 'A':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_APR, &regno ) )
+		    as_bad( _( "Invalid vector address register" ) );
+		  INSERT_OPERAND( VRS, *ip, regno );
+		  continue;
+		case 'B':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_APR, &regno ) )
+		    as_bad( _( "Invalid vector address register" ) );
+		  INSERT_OPERAND( VRT, *ip, regno );
+		  continue;
+		case 'p':
+		  /* handled in riscv_unrecognized_line */
+		  INSERT_OPERAND( VPRED, *ip, riscv_prednum );
+		  //absorb ","
+		  if (*(oparg+1) == ',')
+		  {
+		    ++argnum;
+		    oparg++;
+		  }
+		  continue;
+		case 'N':
+		  /* handled in riscv_unrecognized_line */
+		  INSERT_OPERAND( VN, *ip, riscv_predneg );
+		  //absorb ","
+		  if (*(oparg+1) == ',')
+		  {
+		    ++argnum;
+		    oparg++;
+		  }
+		  continue;
+		case 'c':
+		  my_getExpression( imm_expr, asarg );
+		  check_absolute_expr( ip, imm_expr, false );
+		  if ((unsigned long) imm_expr->X_add_number > 3 )
+		    as_warn( _( "Improper predicate condition (%lu)" ),
+		             (unsigned long) imm_expr->X_add_number );
+		  INSERT_OPERAND( VCOND, *ip, imm_expr->X_add_number );
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case 'v':
+		  /* handled in riscv_unrecognized_line */
+		  INSERT_OPERAND(VVD, *ip, !riscv_scalar);
+		  riscv_scalar = false;
+		  //absorb ","
+		  if(*(oparg+1) == ',')
+		  {
+		    ++argnum;
+		    oparg++;
+		  }
+		  continue;
+		case 'w': //parse one input insts
+		  if (arg_lookup ( &asarg, ' ', riscv_hwacha_svbits, ARRAY_SIZE(riscv_hwacha_svbits), &regno))
+		  {
+		    if(regno > 1 ) {
+		      as_bad( _( "Invalid vector/scalar suffix" ) );
+		    }
+		    INSERT_OPERAND(VVS1, *ip, regno & 0x1);
+		  } else riscv_sv_auto = true;
+		  //advance oparg since we don't have a ','
+		  ++argnum;
+		  oparg++;
+		  continue;
+		case 'x': //parse two input insts
+		  if (arg_lookup ( &asarg, ' ', riscv_hwacha_svbits, ARRAY_SIZE(riscv_hwacha_svbits), &regno))
+		  {
+		    if(regno < 8 || regno > 11) {
+		      as_bad( _( "Invalid vector/scalar suffix" ) );
+		    }
+		    INSERT_OPERAND(VVS1, *ip, (regno & 0x02) >> 1);
+		    INSERT_OPERAND(VVS2, *ip, regno & 0x1);
+		  } else riscv_sv_auto = true;
+		  //advance oparg since we don't have a ','
+		  ++argnum;
+		  oparg++;
+		  continue;
+		case 'y': //parse three input insts
+		  if (arg_lookup ( &asarg, ' ', riscv_hwacha_svbits, ARRAY_SIZE(riscv_hwacha_svbits), &regno))
+		  {
+		    if(regno < 16) {
+		      as_bad( _( "Invalid vector/scalar suffix" ) );
+		    }
+		    INSERT_OPERAND(VVS1, *ip, (regno & 0x4) >> 2);
+		    INSERT_OPERAND(VVS2, *ip, (regno & 0x2) >> 1);
+		    INSERT_OPERAND(VVS3, *ip, regno & 0x1);
+		  } else riscv_sv_auto = true;
+		  //advance oparg since we don't have a ','
+		  ++argnum;
+		  oparg++;
+		  continue;
+		case 'z':
+		  my_getExpression( imm_expr, asarg );
+		  /* check_absolute_expr( ip, imm_expr, false ); */
+		  if ((unsigned long) imm_expr->X_add_number > 256 )
+		    as_warn( _( "Improper predicate operation table amount (%lu)" ),
+		             (unsigned long) imm_expr->X_add_number );
+		  INSERT_OPERAND( VPFUNC, *ip, imm_expr->X_add_number );
+		  imm_expr->X_op = O_absent;
+		  asarg = expr_end;
+		  continue;
+		case 'G':
+		case 'H':		/* fence predecessor/successor */
+		  if (arg_lookup (&asarg, ',', riscv_pred_succ, ARRAY_SIZE(riscv_pred_succ), &regno))
+		    {
+		      if (*oparg == 'G')
+		        INSERT_OPERAND(VPREV, *ip, regno);
+		      else
+		        INSERT_OPERAND(VSUCC, *ip, regno);
+		      continue;
+		    }
+		  break;
+		case 'F':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_PPR, &regno ) )
+		    as_bad( _( "Invalid vector predicate register vpd" ) );
+		  INSERT_OPERAND( VPD, *ip, regno );
+		  continue;
+		case 'O':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_PPR, &regno ) )
+		    as_bad( _( "Invalid vector predicate register vprs1" ) );
+		  INSERT_OPERAND( VPS, *ip, regno );
+		  continue;
+		case 'P':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_PPR, &regno ) )
+		    as_bad( _( "Invalid vector predicate register vprs2" ) );
+		  INSERT_OPERAND( VPT, *ip, regno );
+		  continue;
+		case 'Q':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_PPR, &regno ) )
+		    as_bad( _( "Invalid vector predicate register vprs3" ) );
+		  INSERT_OPERAND( VPR, *ip, regno );
+		  continue;
+		case 'e':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_APR, &regno ) )
+		    as_bad( _( "Invalid vector address register" ) );
+		  INSERT_OPERAND( SVARD, *ip, regno );
+		  continue;
+		case 'E':
+		  if (!reg_lookup( &asarg, RCLASS_HWACHA_SPR, &regno ) )
+		    as_bad( _( "Invalid vector shared register" ) );
+		  INSERT_OPERAND( SVSRDLO, *ip, regno );
+		  INSERT_OPERAND( SVSRDHI, *ip, regno >> 5 );
+		  continue;
+		}
+	      break; /* end Xhwacha */
 
 	    case 'C': /* RVC */
 	      switch (*++oparg)
@@ -2841,7 +3293,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      continue;
 
 	    case 'm': /* Rounding mode.  */
-	      if (arg_lookup (&asarg, riscv_rm,
+	      if (arg_lookup (&asarg, ',', riscv_rm,
 			      ARRAY_SIZE (riscv_rm), &regno))
 		{
 		  INSERT_OPERAND (RM, *ip, regno);
@@ -2851,7 +3303,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 
 	    case 'P':
 	    case 'Q': /* Fence predecessor/successor.  */
-	      if (arg_lookup (&asarg, riscv_pred_succ,
+	      if (arg_lookup (&asarg, ',', riscv_pred_succ,
 			      ARRAY_SIZE (riscv_pred_succ), &regno))
 		{
 		  if (*oparg == 'P')
@@ -3205,6 +3657,10 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
   /* Restore the character we might have clobbered above.  */
   if (save_c)
     *(asargStart  - 1) = save_c;
+
+  /* Reset predicate line state.  */
+  riscv_predneg = false;
+  riscv_prednum = 0;
 
   return error;
 }

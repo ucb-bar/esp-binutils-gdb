@@ -22,6 +22,8 @@
 #define _RISCV_H_
 
 #include "riscv-opc.h"
+#include "riscv-opc-hwacha.h"
+#include "riscv-opc-custom.h"
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -51,6 +53,11 @@ static const char * const riscv_pred_succ[16] =
   0,   "w",  "r",  "rw",  "o",  "ow",  "or",  "orw",
   "i", "iw", "ir", "irw", "io", "iow", "ior", "iorw"
 };
+static const char * const riscv_hwacha_svbits[24] = {
+  "s",    "v",    0,      0,      0,      0,      0,      0,
+  "ss",   "sv",   "vs",   "vv",   0,      0,      0,      0,
+  "sss",  "ssv",  "svs",  "svv",  "vss",  "vsv",  "vvs",  "vvv"
+};
 
 #define RVC_JUMP_BITS 11
 #define RVC_JUMP_REACH ((1ULL << RVC_JUMP_BITS) * RISCV_JUMP_ALIGN)
@@ -58,7 +65,7 @@ static const char * const riscv_pred_succ[16] =
 #define RVC_BRANCH_BITS 8
 #define RVC_BRANCH_REACH ((1ULL << RVC_BRANCH_BITS) * RISCV_BRANCH_ALIGN)
 
-#define RV_X(x, s, n)  (((x) >> (s)) & ((1 << (n)) - 1))
+#define RV_X(x, s, n) (((x) >> (s)) & (((insn_t)1<<(n))-1))
 #define RV_IMM_SIGN(x) (-(((x) >> 31) & 1))
 
 #define EXTRACT_ITYPE_IMM(x) \
@@ -156,6 +163,11 @@ static const char * const riscv_pred_succ[16] =
   (RV_X(x, 0, 10) << 20)
 #define ENCODE_RVV_VC_IMM(x) \
   (RV_X(x, 0, 11) << 20)
+// Hwacha vector imm encoding
+#define ENCODE_ITYPE_VIMM(x) \
+  ((insn_t)RV_X(x, 0, 32) << 32)
+#define ENCODE_STYPE_VIMM(x) \
+  ((RV_X(x, 0, 5) << 12) | ((insn_t)RV_X(x, 5, 7) << 36))
 
 #define VALID_ITYPE_IMM(x) (EXTRACT_ITYPE_IMM(ENCODE_ITYPE_IMM(x)) == (x))
 #define VALID_STYPE_IMM(x) (EXTRACT_STYPE_IMM(ENCODE_STYPE_IMM(x)) == (x))
@@ -312,6 +324,83 @@ static const char * const riscv_pred_succ[16] =
 #define NVECR 32
 #define NVECM 1
 
+/* Hwacha control thread fields. */
+
+#define OP_MASK_SVARD	0x1f
+#define OP_SH_SVARD	7
+#define OP_MASK_SVSRDLO	0x1f
+#define OP_SH_SVSRDLO	7
+#define OP_MASK_SVSRDHI	0x7
+#define OP_SH_SVSRDHI	20
+
+/* Hwacha worker thread fields. */
+
+#define OP_MASK_VRD	0xff
+#define OP_SH_VRD	16
+#define OP_MASK_VRS	0xff
+#define OP_SH_VRS	24
+#define OP_MASK_VRT	0xff
+#define OP_SH_VRT	33
+#define OP_MASK_VRR	0xff
+#define OP_SH_VRR	41
+#define OP_MASK_VPD	0xf
+#define OP_SH_VPD	16
+#define OP_MASK_VPS	0xf
+#define OP_SH_VPS	24
+#define OP_MASK_VPT	0xf
+#define OP_SH_VPT	33
+#define OP_MASK_VPR	0xf
+#define OP_SH_VPR	41
+#define OP_MASK_VAS	0x1f
+#define OP_SH_VAS	24
+#define OP_MASK_VAT	0x1f
+#define OP_SH_VAT	33
+#define OP_MASK_VPRED	0xf
+#define OP_SH_VPRED	12
+#define OP_MASK_VN	0x1
+#define OP_SH_VN	32
+#define OP_MASK_VVD	0x1
+#define OP_SH_VVD	63
+#define OP_MASK_VVS1	0x1
+#define OP_SH_VVS1	62
+#define OP_MASK_VVS2	0x1
+#define OP_SH_VVS2	61
+#define OP_MASK_VVS3	0x1
+#define OP_SH_VVS3	60
+#define OP_MASK_VCOND	0x3
+#define OP_SH_VCOND	33
+#define OP_MASK_VPFUNC	0xff
+#define OP_SH_VPFUNC	50
+
+#define OP_MASK_VVIMM	0xffffffff
+#define OP_SH_VVIMM	32
+#define OP_MASK_VCIMM	0x1fffffff
+#define OP_SH_VCIMM	35
+#define OP_MASK_VSHAMT	0x3f
+#define OP_SH_VSHAMT	32
+#define OP_MASK_VSHAMTW	0x1f
+#define OP_SH_VSHAMTW	32
+#define OP_MASK_VAQ	0x1
+#define OP_SH_VAQ	54
+#define OP_MASK_VRL	0x1
+#define OP_SH_VRL	53
+#define OP_MASK_VRM	0x7
+#define OP_SH_VRM	50
+#define OP_MASK_VPREV	0xf
+#define OP_SH_VPREV	20
+#define OP_MASK_VSUCC	0xf
+#define OP_SH_VSUCC	16
+
+#define OP_MASK_IMMNGPR	0x1ff
+#define OP_SH_IMMNGPR	20
+#define OP_MASK_IMMNPPR	0x7
+#define OP_SH_IMMNPPR	29
+#define OP_MASK_IMMSEGNELM	0x7
+#define OP_SH_IMMSEGNELM	45
+
+#define OP_MASK_CUSTOM_IMM	0x7f
+#define OP_SH_CUSTOM_IMM	25
+
 /* ABI names for selected x-registers.  */
 
 #define X_RA 1
@@ -325,6 +414,10 @@ static const char * const riscv_pred_succ[16] =
 
 #define NGPR 32
 #define NFPR 32
+#define NVGPR 256
+#define NVSPR 256
+#define NVAPR 32
+#define NVPPR 16
 
 /* These fake label defines are use by both the assembler, and
    libopcodes.  The assembler uses this when it needs to generate a fake
@@ -388,6 +481,8 @@ enum riscv_insn_class
   INSN_CLASS_V,
   INSN_CLASS_ZVEF,
   INSN_CLASS_SVINVAL,
+  INSN_CLASS_XHWACHA,
+  INSN_CLASS_XCUSTOM,
 };
 
 /* This structure holds information for a particular instruction.  */
@@ -495,6 +590,7 @@ enum
   M_SEXTH,
   M_VMSGE,
   M_VMSGEU,
+  M_VF,
   M_NUM_MACROS
 };
 
@@ -516,6 +612,10 @@ extern const char * const riscv_vsew[8];
 extern const char * const riscv_vlmul[8];
 extern const char * const riscv_vta[2];
 extern const char * const riscv_vma[2];
+extern const char * const riscv_hwacha_gpr_names[NVGPR];
+extern const char * const riscv_hwacha_spr_names[NVSPR];
+extern const char * const riscv_hwacha_apr_names[NVAPR];
+extern const char * const riscv_hwacha_ppr_names[NVPPR];
 
 extern const struct riscv_opcode riscv_opcodes[];
 extern const struct riscv_opcode riscv_insn_types[];

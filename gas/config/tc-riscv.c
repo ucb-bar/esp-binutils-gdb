@@ -1689,6 +1689,11 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	    case 'k':		/* 29 bit immediate shifted up to fill 32 bits */
         my_getExpression( imm_expr, s );
         /* check_absolute_expr( ip, imm_expr, FALSE ); */
+	      if (imm_expr->X_op == O_symbol) {
+	        *imm_reloc = BFD_RELOC_RISCV_VF_JAL;
+	        s = expr_end;
+          continue;
+        }
         if ((signed long) imm_expr->X_add_number > ((signed long)(1 << 29) - 1) ||
             (signed long) imm_expr->X_add_number < ((signed long)-1*(1 << 29)))
           as_warn( _( "Improper vcimm amount (%ld), must be between %lu and %ld" ),
@@ -3071,6 +3076,15 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
       break;
 
     case BFD_RELOC_RISCV_ALIGN:
+      break;
+    case BFD_RELOC_RISCV_VF_JAL:
+      if (fixP->fx_addsy)
+	{
+	  /* Fill in a tentative value to improve objdump readability.  */
+	  bfd_vma target = S_GET_VALUE (fixP->fx_addsy) + *valP;
+	  bfd_vma delta = target - md_pcrel_from (fixP);
+	  bfd_putl64 (bfd_getl64 (buf) | ENCODE_JTYPE_VIMM (delta), buf);
+	}
       break;
 
     default:

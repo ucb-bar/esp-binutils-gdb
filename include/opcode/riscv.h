@@ -146,6 +146,8 @@ static const char * const riscv_hwacha_svbits[24] = {
 //vector imm encoding
 #define ENCODE_ITYPE_VIMM(x) \
   ((insn_t)RV_X(x, 0, 32) << 32)
+#define ENCODE_JTYPE_VIMM(x) \
+  ((insn_t)RV_X(x, 3, 29) << 35)
 #define ENCODE_STYPE_VIMM(x) \
   ((RV_X(x, 0, 5) << 12) | ((insn_t)RV_X(x, 5, 7) << 36))
 

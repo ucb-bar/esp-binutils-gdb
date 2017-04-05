@@ -5731,6 +5731,7 @@ value in a word.  The relocation is relative offset from  */
   BFD_RELOC_RISCV_RVC_LUI,
   BFD_RELOC_RISCV_GPREL_I,
   BFD_RELOC_RISCV_GPREL_S,
+  BFD_RELOC_RISCV_VF_JAL,
 
 /* This is used to tell the dynamic linker to copy the value out of
 the dynamic object into the runtime process image.  */

@@ -1279,6 +1279,10 @@ macro (struct riscv_cl_insn *ip, expressionS *imm_expr,
       pcrel_access (0, rs1, imm_expr, "vf", "s,s,q",
         BFD_RELOC_RISCV_PCREL_HI20, BFD_RELOC_RISCV_PCREL_LO12_S);
       break;
+    case M_VSETCFG:
+      load_const (rd, imm_expr);
+      macro_build (NULL, "vsetcfg", "s", rd);
+      break;
 
     case M_CALL:
       riscv_call (rd, rs1, imm_expr, *imm_reloc);
@@ -1639,6 +1643,23 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
         imm_expr->X_op = O_absent;
         s = expr_end;
         continue;
+      case 'C':
+        {
+          my_getExpression( imm_expr, s );
+          unsigned long nvvd = imm_expr->X_add_number;
+          s = expr_end+1;
+          my_getExpression( imm_expr, s );
+          unsigned long nvvw = imm_expr->X_add_number;
+          s = expr_end+1;
+          my_getExpression( imm_expr, s );
+          unsigned long nvvh = imm_expr->X_add_number;
+          s = expr_end+1;
+          my_getExpression( imm_expr, s );
+          unsigned long nvvp = imm_expr->X_add_number;
+          s = expr_end;
+          imm_expr->X_add_number = ENCODE_VCFG(nvvd, nvvw, nvvh, nvvp);
+          continue;
+        }
       case 'n':
         my_getExpression( imm_expr, s );
         /* check_absolute_expr( ip, imm_expr, FALSE ); */

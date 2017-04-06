@@ -1871,6 +1871,7 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vsetcfg",    0, INSN_CLASS_XHWACHA, "s", MATCH_VSETCFG, MASK_VSETCFG | MASK_IMM, match_opcode, 0},
 {"vsetcfg",    0, INSN_CLASS_XHWACHA, "#g,#f", MATCH_VSETCFG, MASK_VSETCFG | MASK_RS1, match_opcode, 0},
 {"vsetcfg",    0, INSN_CLASS_XHWACHA, "s,#g,#f", MATCH_VSETCFG, MASK_VSETCFG, match_opcode, 0},
+{"vsetcfg",    0, INSN_CLASS_XHWACHA, "d,#C", 0, (int) M_VSETCFG, match_never, INSN_MACRO},
 {"vsetucfg",   0, INSN_CLASS_XHWACHA, "d,u", MATCH_LUI, MASK_LUI, match_opcode, INSN_ALIAS},
 {"vsetvl",     0, INSN_CLASS_XHWACHA, "d,s", MATCH_VSETVL, MASK_VSETVL, match_opcode, 0},
 {"vgetcfg",    0, INSN_CLASS_XHWACHA, "d", MATCH_VGETCFG, MASK_VGETCFG, match_opcode, 0},

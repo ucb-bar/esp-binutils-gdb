@@ -164,6 +164,11 @@ static const char * const riscv_hwacha_svbits[24] = {
 #define ENCODE_RVV_VC_IMM(x) \
   (RV_X(x, 0, 11) << 20)
 // Hwacha vector imm encoding
+#define ENCODE_VCFG(nvvd, nvvw, nvvh, nvp) \
+  (((nvvd) & 0x1ff) | \
+  (((nvp) & 0x1f) << 9) | \
+  (((nvvw) & 0x1ff) << 14) | \
+  (((nvvh) & 0x1ff) << 23))
 #define ENCODE_ITYPE_VIMM(x) \
   ((insn_t)RV_X(x, 0, 32) << 32)
 #define ENCODE_JTYPE_VIMM(x) \
@@ -593,6 +598,7 @@ enum
   M_VMSGE,
   M_VMSGEU,
   M_VF,
+  M_VSETCFG,
   M_NUM_MACROS
 };
 

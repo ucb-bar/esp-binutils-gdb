@@ -1539,6 +1539,10 @@ perform_relocation (const reloc_howto_type *howto,
       value = ENCODE_RVC_LUI_IMM (RISCV_CONST_HIGH_PART (value));
       break;
 
+    case R_RISCV_VF_JAL:
+      value = ENCODE_JTYPE_VIMM(value);
+      break;
+
     case R_RISCV_32:
     case R_RISCV_64:
     case R_RISCV_ADD8:
@@ -1817,6 +1821,7 @@ riscv_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	case R_RISCV_RVC_LUI:
 	case R_RISCV_LO12_I:
 	case R_RISCV_LO12_S:
+	case R_RISCV_VF_JAL:
 	  /* These require no special handling beyond perform_relocation.  */
 	  break;
 

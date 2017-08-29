@@ -960,7 +960,7 @@ const struct riscv_opcode riscv_opcodes[] =
 
 /* Vector predicate register load/stores */
 {"vpl", "Xhwacha", "#N,#p,#F,#A", MATCH_VPL, MASK_VPL, match_opcode, 0},
-{"vps", "Xhwacha", "#N,#p,#P,#B", MATCH_VPS, MASK_VPS, match_opcode, 0},
+{"vps", "Xhwacha", "#N,#p,#P,#A", MATCH_VPS, MASK_VPS, match_opcode, 0},
 
 /* Vector predicate register arithmetic */
 {"vpop",     "Xhwacha",   "#F,#O,#P,#Q,#z", MATCH_VPOP, MASK_VPOP, match_opcode, 0 },

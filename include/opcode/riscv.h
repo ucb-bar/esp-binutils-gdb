@@ -22,6 +22,7 @@
 #define _RISCV_H_
 
 #include "riscv-opc.h"
+#include "riscv-opc-hwacha.h"
 #include <stdlib.h>
 #include <stdint.h>
 

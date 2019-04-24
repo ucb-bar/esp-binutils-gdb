@@ -1403,6 +1403,23 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vfmul.d.s",     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VFMUL_D_S | MASK_VRM, MASK_VFMUL_D_S | MASK_VRM, match_opcode,  0 },
 {"vfmul.d.s",     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t,#m",  MATCH_VFMUL_D_S, MASK_VFMUL_D_S, match_opcode,  0 },
 
+/*new rvv instructions*/
+{"vmerge"   ,     0, {"Xhwacha", 0},   "#N,#p,#v,#w,#x,#d,#s,#t,#Q",  MATCH_VMERGE, MASK_VMERGE, match_opcode,  0 },
+{"vmadd"    ,     0, {"Xhwacha", 0},   "#N,#p,#v,#y,#d,#s,#t,#r",  MATCH_VMADD, MASK_VMADD, match_opcode,  0 },
+{"vmsub"    ,     0, {"Xhwacha", 0},   "#N,#p,#v,#y,#d,#s,#t,#r",  MATCH_VMSUB, MASK_VMSUB, match_opcode,  0 },
+{"vclipw"   ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VCLIPW, MASK_VCLIPW, match_opcode,  0 },
+{"vcliph"   ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VCLIPH, MASK_VCLIPH, match_opcode,  0 },
+{"vclipb"   ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VCLIPB, MASK_VCLIPB, match_opcode,  0 },
+{"vmax"     ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VMAX, MASK_VMAX, match_opcode,  0 },
+{"vmaxu"    ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VMAXU, MASK_VMAXU, match_opcode,  0 },
+{"vmin"     ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VMIN, MASK_VMIN, match_opcode,  0 },
+{"vminu"    ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VMINU, MASK_VMINU, match_opcode,  0 },
+{"vsetxrm"  ,     0, {"Xhwacha", 0},   "d,s",  MATCH_VSETXRM, MASK_VSETXRM, match_opcode,  0 },
+{"vgetxrm"  ,     0, {"Xhwacha", 0},   "d",  MATCH_VGETXRM, MASK_VGETXRM, match_opcode,  0 },
+{"vsetxsat" ,     0, {"Xhwacha", 0},   "d,s",  MATCH_VSETXSAT, MASK_VSETXSAT, match_opcode,  0 },
+{"vgetxsat" ,     0, {"Xhwacha", 0},   "d",  MATCH_VGETXSAT, MASK_VGETXSAT, match_opcode,  0 },
+
+
 /* Terminate the list.  */
 {0, 0, {0}, 0, 0, 0, 0, 0}
 };

@@ -1371,6 +1371,7 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vsetxsat" ,    "Xhwacha",   "d,s",  MATCH_VSETXSAT, MASK_VSETXSAT, match_opcode,  0 },
 {"vgetxsat" ,    "Xhwacha",   "d",  MATCH_VGETXSAT, MASK_VGETXSAT, match_opcode,  0 },
 
+{"vredsum"  ,    "Xhwacha",   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VREDSUM, MASK_VREDSUM, match_opcode,  0 },
 
 /* Terminate the list.  */
 {0, 0, 0, 0, 0, 0, 0}

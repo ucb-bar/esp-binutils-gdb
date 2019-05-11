@@ -1414,11 +1414,11 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vmaxu"    ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VMAXU, MASK_VMAXU, match_opcode,  0 },
 {"vmin"     ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VMIN, MASK_VMIN, match_opcode,  0 },
 {"vminu"    ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VMINU, MASK_VMINU, match_opcode,  0 },
+{"vredsum"  ,     0, {"Xhwacha", 0},   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VREDSUM, MASK_VREDSUM, match_opcode,  0 },
 {"vsetxrm"  ,     0, {"Xhwacha", 0},   "d,s",  MATCH_VSETXRM, MASK_VSETXRM, match_opcode,  0 },
 {"vgetxrm"  ,     0, {"Xhwacha", 0},   "d",  MATCH_VGETXRM, MASK_VGETXRM, match_opcode,  0 },
 {"vsetxsat" ,     0, {"Xhwacha", 0},   "d,s",  MATCH_VSETXSAT, MASK_VSETXSAT, match_opcode,  0 },
 {"vgetxsat" ,     0, {"Xhwacha", 0},   "d",  MATCH_VGETXSAT, MASK_VGETXSAT, match_opcode,  0 },
-
 
 /* Terminate the list.  */
 {0, 0, {0}, 0, 0, 0, 0, 0}

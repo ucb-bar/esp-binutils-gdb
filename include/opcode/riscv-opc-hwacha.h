@@ -9,13 +9,13 @@
 #define MASK_VGETCFG  0xfffff07f
 #define MATCH_VGETVL 0x200400b
 #define MASK_VGETVL  0xfffff07f
-#define MATCH_VSETXRM 0x700b
+#define MATCH_VSETXRM 0x400600b
 #define MASK_VSETXRM  0xfff0707f
-#define MATCH_VSETXSAT 0x500b
+#define MATCH_VSETXSAT 0x600600b
 #define MASK_VSETXSAT  0xfff0707f
-#define MATCH_VGETXRM 0x100b
+#define MATCH_VGETXRM 0x400400b
 #define MASK_VGETXRM  0xfffff07f
-#define MATCH_VGETXSAT 0x200100b
+#define MATCH_VGETXSAT 0x600400b
 #define MASK_VGETXSAT  0xfffff07f
 #define MATCH_VUNCFG 0x400000b
 #define MASK_VUNCFG  0xffffffff

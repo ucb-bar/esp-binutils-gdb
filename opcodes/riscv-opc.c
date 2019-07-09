@@ -862,18 +862,15 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vf",        "Xhwacha", "A,s", 0, (int) M_VF, match_never, INSN_MACRO },
 
 {"vxcptcause",   "Xhwacha", "d", MATCH_VXCPTCAUSE, MASK_VXCPTCAUSE, match_opcode, 0},
-{"vxcptaux",     "Xhwacha", "d", MATCH_VXCPTAUX, MASK_VXCPTAUX, match_opcode, 0},
+{"vxcptval",     "Xhwacha", "d", MATCH_VXCPTVAL, MASK_VXCPTVAL, match_opcode, 0},
+{"vxcptpc",      "Xhwacha", "d", MATCH_VXCPTPC, MASK_VXCPTPC, match_opcode, 0},
 
-{"vxcptsave",    "Xhwacha", "s", MATCH_VXCPTSAVE, MASK_VXCPTSAVE, match_opcode, 0},
-{"vxcptrestore", "Xhwacha", "s", MATCH_VXCPTRESTORE, MASK_VXCPTRESTORE, match_opcode, 0},
+{"vxcptret",     "Xhwacha", "", MATCH_VXCPTRET, MASK_VXCPTRET, match_opcode, 0},
 {"vxcptkill",    "Xhwacha", "", MATCH_VXCPTKILL, MASK_VXCPTKILL, match_opcode, 0},
 
-{"vxcptevac",    "Xhwacha", "s", MATCH_VXCPTEVAC, MASK_VXCPTEVAC, match_opcode, 0},
-{"vxcpthold",    "Xhwacha", "s", MATCH_VXCPTHOLD, MASK_VXCPTHOLD, match_opcode, 0},
-{"venqcmd",      "Xhwacha", "s,t", MATCH_VENQCMD, MASK_VENQCMD, match_opcode, 0},
-{"venqimm1",     "Xhwacha", "s,t", MATCH_VENQIMM1, MASK_VENQIMM1, match_opcode, 0},
-{"venqimm2",     "Xhwacha", "s,t", MATCH_VENQIMM2, MASK_VENQIMM2, match_opcode, 0},
-{"venqcnt",      "Xhwacha", "s,t", MATCH_VENQCNT, MASK_VENQCNT, match_opcode, 0},
+{"vfence.vma", "Xhwacha", "", MATCH_VFENCE_VMA, MASK_VFENCE_VMA | MASK_RS1 | MASK_RS2, match_opcode, INSN_ALIAS },
+{"vfence.vma", "Xhwacha", "s", MATCH_VFENCE_VMA, MASK_VFENCE_VMA | MASK_RS2, match_opcode, INSN_ALIAS },
+{"vfence.vma", "Xhwacha", "s,t", MATCH_VFENCE_VMA, MASK_VFENCE_VMA, match_opcode, 0},
 
 /* Xhwacha extension work thread instructions*/
 {"vstop",     "Xhwacha", "", MATCH_VSTOP, MASK_VSTOP, match_opcode, 0},

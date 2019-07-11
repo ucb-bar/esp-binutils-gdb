@@ -1370,6 +1370,14 @@ const struct riscv_opcode riscv_opcodes[] =
 
 {"vredsum"  ,    "Xhwacha",   "#N,#p,#v,#x,#d,#s,#t",  MATCH_VREDSUM, MASK_VREDSUM, match_opcode,  0 },
 
+/* Multi-dimensional stuff */
+{"vfvmmadd.h",   "Xhwacha", "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_H | MASK_VRM, MASK_VFVMMADD_H | MASK_VRM, match_opcode,   0 },
+{"vfvmmadd.h",   "Xhwacha", "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_H, MASK_VFVMMADD_H, match_opcode,   0 },
+{"vfvmmadd.s",   "Xhwacha", "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_S | MASK_VRM, MASK_VFVMMADD_S | MASK_VRM, match_opcode,   0 },
+{"vfvmmadd.s",   "Xhwacha", "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_S, MASK_VFVMMADD_S, match_opcode,   0 },
+{"vfvmmadd.d",   "Xhwacha", "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_D | MASK_VRM, MASK_VFVMMADD_D | MASK_VRM, match_opcode,   0 },
+{"vfvmmadd.d",   "Xhwacha", "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_D, MASK_VFVMMADD_D, match_opcode,   0 },
+
 /* Terminate the list.  */
 {0, 0, 0, 0, 0, 0, 0}
 

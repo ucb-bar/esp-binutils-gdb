@@ -281,6 +281,8 @@ static const char * const riscv_hwacha_svbits[24] = {
 #define OP_SH_VCOND	33
 #define OP_MASK_VPFUNC	0xff
 #define OP_SH_VPFUNC	50
+#define OP_MASK_VDEPTH	0x7
+#define OP_SH_VDEPTH	57
 
 #define OP_MASK_VIMM	0xffffffff
 #define OP_SH_VIMM	32

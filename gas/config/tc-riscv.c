@@ -541,6 +541,7 @@ validate_riscv_insn (const struct riscv_opcode *opc)
 	  case 'z': USE_BITS (OP_MASK_VPFUNC, OP_SH_VPFUNC); break;
 	  case 'G':	USE_BITS (OP_MASK_VPREV,		OP_SH_VPREV); break;
 	  case 'H':	USE_BITS (OP_MASK_VSUCC,		OP_SH_VSUCC); break;
+	  case 'L':	USE_BITS (OP_MASK_VDEPTH,		OP_SH_VDEPTH); break;
 	  case 'v': USE_BITS (OP_MASK_VD, OP_SH_VD); break;
 	  case 'y': USE_BITS (OP_MASK_VS3, OP_SH_VS3); /*fallthrough*/
 	  case 'x': USE_BITS (OP_MASK_VS2, OP_SH_VS2); /*fallthrough*/
@@ -1558,6 +1559,17 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
         imm_expr->X_op = O_absent;
         s = expr_end;
         continue;
+	    case 'L':		/* depth amount, 1 - 8 */
+	      my_getExpression (imm_expr, s);
+	      check_absolute_expr (ip, imm_expr);
+	      if ((unsigned long) imm_expr->X_add_number > 8 ||
+            (unsigned long) imm_expr->X_add_number < 1)
+		  as_warn (_("Improper vdepth amount (%lu)"),
+			 (unsigned long) imm_expr->X_add_number);
+	      INSERT_OPERAND (VDEPTH, *ip, (imm_expr->X_add_number - 1));
+	      imm_expr->X_op = O_absent;
+	      s = expr_end;
+	      continue;
       case 'd':
         if (riscv_sv_auto) {
           if (!reg_lookup( &s, RCLASS_VEC_GPR, &regno ) ) {

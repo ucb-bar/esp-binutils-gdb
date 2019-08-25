@@ -1448,7 +1448,35 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      /* Successful assembly.  */
 	      error = NULL;
 	      goto out;
-
+      /* Xcustom */
+	    case '^':
+	      {
+		unsigned long max = OP_MASK_RD;
+		my_getExpression (imm_expr, s);
+		check_absolute_expr (ip, imm_expr);
+		switch (*++args)
+		  {
+		  case 'j':
+		    max = OP_MASK_CUSTOM_IMM;
+		    INSERT_OPERAND (CUSTOM_IMM, *ip, imm_expr->X_add_number);
+		    break;
+		  case 'd':
+		    INSERT_OPERAND (RD, *ip, imm_expr->X_add_number);
+		    break;
+		  case 's':
+		    INSERT_OPERAND (RS1, *ip, imm_expr->X_add_number);
+		    break;
+		  case 't':
+		    INSERT_OPERAND (RS2, *ip, imm_expr->X_add_number);
+		    break;
+		  }
+		imm_expr->X_op = O_absent;
+		s = expr_end;
+		if ((unsigned long) imm_expr->X_add_number > max)
+		  as_warn ("Bad custom immediate (%lu), must be at most %lu",
+			   (unsigned long)imm_expr->X_add_number, max);
+		continue;
+	      }
 	    /* Xhwacha */
 	    case '#':
         {

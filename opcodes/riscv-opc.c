@@ -1378,6 +1378,8 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vfvmmadd.d",   "Xhwacha", "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_D | MASK_VRM, MASK_VFVMMADD_D | MASK_VRM, match_opcode,   0 },
 {"vfvmmadd.d",   "Xhwacha", "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_D, MASK_VFVMMADD_D, match_opcode,   0 },
 
+{"vldd",       "Xhwacha", "#N,#p,#d,#A,#L", MATCH_VLDD, MASK_VLDD, match_opcode, 0},
+
 /* Terminate the list.  */
 {0, 0, 0, 0, 0, 0, 0}
 

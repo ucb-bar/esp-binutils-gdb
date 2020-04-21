@@ -1418,12 +1418,17 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vgetxsat" ,     0, {"Xhwacha", 0},   "d",  MATCH_VGETXSAT, MASK_VGETXSAT, match_opcode,  0 },
 
 /* Multi-dimensional stuff */
-{"vfvmmadd.h",    0, {"Xhwacha", 0},   "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_H | MASK_VRM, MASK_VFVMMADD_H | MASK_VRM, match_opcode,   0 },
-{"vfvmmadd.h",    0, {"Xhwacha", 0},   "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_H, MASK_VFVMMADD_H, match_opcode,   0 },
-{"vfvmmadd.s",    0, {"Xhwacha", 0},   "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_S | MASK_VRM, MASK_VFVMMADD_S | MASK_VRM, match_opcode,   0 },
-{"vfvmmadd.s",    0, {"Xhwacha", 0},   "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_S, MASK_VFVMMADD_S, match_opcode,   0 },
-{"vfvmmadd.d",    0, {"Xhwacha", 0},   "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_D | MASK_VRM, MASK_VFVMMADD_D | MASK_VRM, match_opcode,   0 },
-{"vfvmmadd.d",    0, {"Xhwacha", 0},   "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_D, MASK_VFVMMADD_D, match_opcode,   0 },
+{"vfvmmadd.h",    0, {"Xhwacha", 0}, "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_H | MASK_VRM, MASK_VFVMMADD_H | MASK_VRM, match_opcode,   0 },
+{"vfvmmadd.h",    0, {"Xhwacha", 0}, "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_H, MASK_VFVMMADD_H, match_opcode,   0 },
+{"vfvmmadd.s",    0, {"Xhwacha", 0}, "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_S | MASK_VRM, MASK_VFVMMADD_S | MASK_VRM, match_opcode,   0 },
+{"vfvmmadd.s",    0, {"Xhwacha", 0}, "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_S, MASK_VFVMMADD_S, match_opcode,   0 },
+{"vfvmmadd.d",    0, {"Xhwacha", 0}, "#N,#p,#v,#y,#d,#s,#t,#r,#L",  MATCH_VFVMMADD_D | MASK_VRM, MASK_VFVMMADD_D | MASK_VRM, match_opcode,   0 },
+{"vfvmmadd.d",    0, {"Xhwacha", 0}, "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_D, MASK_VFVMMADD_D, match_opcode,   0 },
+
+{"vldd",          0, {"Xhwacha", 0}, "#N,#p,#d,#A,#L", MATCH_VLDD, MASK_VLDD, match_opcode, 0},
+{"vlsmd",         0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n", MATCH_VLSMD, MASK_VLSMD, match_opcode, 0},
+{"vldsmd",        0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n,#L", MATCH_VLDSMD, MASK_VLDSMD, match_opcode, 0},
+{"vssmd",         0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n", MATCH_VSSMD, MASK_VSSMD, match_opcode, 0},
 
 /* Terminate the list.  */
 {0, 0, {0}, 0, 0, 0, 0, 0}

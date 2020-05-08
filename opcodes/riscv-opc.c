@@ -1426,9 +1426,13 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vfvmmadd.d",    0, {"Xhwacha", 0}, "#N,#p,#v,#y,#d,#s,#t,#r,#L,#m",  MATCH_VFVMMADD_D, MASK_VFVMMADD_D, match_opcode,   0 },
 
 {"vldd",          0, {"Xhwacha", 0}, "#N,#p,#d,#A,#L", MATCH_VLDD, MASK_VLDD, match_opcode, 0},
+{"vldw",          0, {"Xhwacha", 0}, "#N,#p,#d,#A,#L", MATCH_VLDW, MASK_VLDW, match_opcode, 0},
 {"vlsmd",         0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n", MATCH_VLSMD, MASK_VLSMD, match_opcode, 0},
+{"vlsmw",         0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n", MATCH_VLSMW, MASK_VLSMW, match_opcode, 0},
 {"vldsmd",        0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n,#L", MATCH_VLDSMD, MASK_VLDSMD, match_opcode, 0},
+{"vldsmw",        0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n,#L", MATCH_VLDSMW, MASK_VLDSMW, match_opcode, 0},
 {"vssmd",         0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n", MATCH_VSSMD, MASK_VSSMD, match_opcode, 0},
+{"vssmw",         0, {"Xhwacha", 0}, "#N,#p,#d,#A,#B,#n", MATCH_VSSMW, MASK_VSSMW, match_opcode, 0},
 
 /* Terminate the list.  */
 {0, 0, {0}, 0, 0, 0, 0, 0}

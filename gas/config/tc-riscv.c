@@ -282,7 +282,7 @@ riscv_get_default_ext_version (const char *name,
 {
   struct riscv_ext_version *ext;
 
-  *major_version = 0;
+  *major_version = 2;
   *minor_version = 0;
 
   if (name == NULL || default_isa_spec == ISA_SPEC_CLASS_NONE)

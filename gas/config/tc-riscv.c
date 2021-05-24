@@ -615,13 +615,12 @@ enum reg_class
 {
   RCLASS_GPR,
   RCLASS_FPR,
-  RCLASS_MAX,
-
   RCLASS_CSR,
   RCLASS_VEC_GPR,
   RCLASS_VEC_SPR,
   RCLASS_VEC_APR,
   RCLASS_VEC_PPR,
+  RCLASS_MAX,
 };
 
 static struct hash_control *reg_names_hash = NULL;

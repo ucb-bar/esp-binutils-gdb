@@ -934,8 +934,8 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vfirst",     0, INSN_CLASS_HWACHA, "#N,#p,#D,#s", MATCH_VFIRST, MASK_VFIRST, match_opcode, 0},
 
 /* work thread control flow instructions */
-{"vcjal",      0, { 0, INSN_CLASS_HWACHA, 0}, "#N,#p,#c,#D,#k", MATCH_VCJAL, MASK_VCJAL, match_opcode, 0},
-{"vcjalr",     0, { 0, INSN_CLASS_HWACHA, 0}, "#N,#p,#c,#D,#S,#k", MATCH_VCJALR, MASK_VCJALR, match_opcode, 0},
+{"vcjal",      0, INSN_CLASS_HWACHA, "#N,#p,#c,#D,#k", MATCH_VCJAL, MASK_VCJAL, match_opcode, 0},
+{"vcjalr",     0, INSN_CLASS_HWACHA, "#N,#p,#c,#D,#S,#k", MATCH_VCJALR, MASK_VCJALR, match_opcode, 0},
 
 /* scalar load upper */
 {"vlui",       0, INSN_CLASS_HWACHA, "#D,#j", MATCH_VLUI, MASK_VLUI, match_opcode, 0},

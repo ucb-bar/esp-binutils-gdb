@@ -900,7 +900,7 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vsetcfg",    0, INSN_CLASS_HWACHA, "s,#g,#f", MATCH_VSETCFG, MASK_VSETCFG, match_opcode, 0},
 {"vsetcfg",    0, INSN_CLASS_HWACHA, "d,#C", 0, (int) M_VSETCFG, match_never, INSN_MACRO},
 {"vsetucfg",   0, INSN_CLASS_HWACHA, "d,u", MATCH_LUI, MASK_LUI, match_opcode, INSN_ALIAS},
-{"hvsetvl",     0, INSN_CLASS_HWACHA, "d,s", MATCH_HVSETVL, MASK_HVSETVL, match_opcode, 0},
+{"vsetvl",     0, INSN_CLASS_HWACHA, "d,s", MATCH_VSETVL, MASK_VSETVL, match_opcode, 0},
 {"vgetcfg",    0, INSN_CLASS_HWACHA, "d", MATCH_VGETCFG, MASK_VGETCFG, match_opcode, 0},
 {"vgetvl",     0, INSN_CLASS_HWACHA, "d", MATCH_VGETVL, MASK_VGETVL, match_opcode, 0},
 {"vuncfg",     0, INSN_CLASS_HWACHA, "", MATCH_VUNCFG, MASK_VUNCFG, match_opcode, 0},

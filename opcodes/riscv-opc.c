@@ -1065,6 +1065,7 @@ const struct riscv_opcode riscv_opcodes[] =
 
 /* RVV instructions.  */
 {"vsetvl",     0, INSN_CLASS_V,  "d,s,t",  MATCH_VSETVL, MASK_VSETVL, match_opcode, 0},
+{"vsetvl",     0, INSN_CLASS_XHWACHA, "d,s", MATCH_VSETVL_X, MASK_VSETVL_X, match_opcode, 0}, /* Hwacha */
 {"vsetvli",    0, INSN_CLASS_V,  "d,s,Vc", MATCH_VSETVLI, MASK_VSETVLI, match_opcode, 0},
 {"vsetivli",   0, INSN_CLASS_V,  "d,Z,Vb", MATCH_VSETIVLI, MASK_VSETIVLI, match_opcode, 0},
 
@@ -1873,7 +1874,6 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vsetcfg",    0, INSN_CLASS_XHWACHA, "s,#g,#f", MATCH_VSETCFG, MASK_VSETCFG, match_opcode, 0},
 {"vsetcfg",    0, INSN_CLASS_XHWACHA, "d,#C", 0, (int) M_VSETCFG, match_never, INSN_MACRO},
 {"vsetucfg",   0, INSN_CLASS_XHWACHA, "d,u", MATCH_LUI, MASK_LUI, match_opcode, INSN_ALIAS},
-{"vsetvl",     0, INSN_CLASS_XHWACHA, "d,s", MATCH_VSETVL, MASK_VSETVL, match_opcode, 0},
 {"vgetcfg",    0, INSN_CLASS_XHWACHA, "d", MATCH_VGETCFG, MASK_VGETCFG, match_opcode, 0},
 {"vgetvl",     0, INSN_CLASS_XHWACHA, "d", MATCH_VGETVL, MASK_VGETVL, match_opcode, 0},
 {"vuncfg",     0, INSN_CLASS_XHWACHA, "", MATCH_VUNCFG, MASK_VUNCFG, match_opcode, 0},

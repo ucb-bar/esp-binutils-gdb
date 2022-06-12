@@ -1284,6 +1284,7 @@ init_opcode_hash (const struct riscv_opcode *opcodes,
   while (opcodes[i].name)
     {
       const char *name = opcodes[i].name;
+
       if (str_hash_insert (hash, name, &opcodes[i], 0) != NULL)
 	as_fatal (_("internal: duplicate %s"), name);
 

@@ -2244,6 +2244,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 
   insn = (struct riscv_opcode *) str_hash_find (hash, str);
 
+ repeat:
   asargStart = asarg;
   for ( ; insn && insn->name && strcmp (insn->name, str) == 0; insn++)
     {
@@ -3172,6 +3173,32 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	}
       asarg = asargStart;
       insn_with_csr = false;
+    }
+
+  /* Restore character if clobbered initially and on subsequent scans.  */
+  asarg = asargStart - 1;
+  if (save_c)
+    {
+      *asarg-- = save_c;
+      save_c = 0;
+    }
+
+  /* If no suitable opcode entry has been found yet, try progressively
+     shorter prefixes of the instruction name stopping at a period.  */
+  for ( ; asarg > str; asarg--)
+    {
+      if (*asarg != '.')
+	continue;
+
+      *asarg = '\0';
+      insn = (struct riscv_opcode *) str_hash_find (hash, str);
+      if (insn != NULL)
+	{
+	  save_c = '.';
+	  asarg++;
+	  goto repeat;
+	}
+      *asarg = '.';
     }
 
  out:
